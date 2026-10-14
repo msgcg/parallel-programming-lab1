@@ -1,0 +1,46 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "1. ВАНКЛИК: Полная демонстрация Лаб 1 (Сервер + Клиенты)",
+            "request": "launch",
+            "mainClass": "OneClickLab1",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "PowerShell",
+            "name": "2. ВАНКЛИК: Прямой запуск без расширений (Терминал)",
+            "request": "launch",
+            "script": "${workspaceFolder}/0_ВАНКЛИК_ЗАПУСК.bat"
+        },
+        {
+            "type": "java",
+            "name": "3. Сервер: UDPServer (порт 1501)",
+            "request": "launch",
+            "mainClass": "UDPServer",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "java",
+            "name": "4. Клиент: UDPClient (Интерактивный)",
+            "request": "launch",
+            "mainClass": "UDPClient",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "java",
+            "name": "5. Автотест: MultiClientTest (4 клиента Java)",
+            "request": "launch",
+            "mainClass": "MultiClientTest",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "python",
+            "name": "6. Автотест: Python (run_test.py)",
+            "request": "launch",
+            "program": "${workspaceFolder}/run_test.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}

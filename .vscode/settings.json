@@ -1,0 +1,20 @@
+{
+    "files.encoding": "utf8",
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.env.windows": {
+        "JAVA_HOME": "C:\\Users\\maxxf\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.8.9-hotspot",
+        "Path": "C:\\Users\\maxxf\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.8.9-hotspot\\bin;${env:Path}"
+    },
+    "java.jdt.ls.java.home": "C:\\Users\\maxxf\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.8.9-hotspot",
+    "java.jdt.ls.vmargs": "-XX:+UseG1GC -XX:+UseStringDeduplication -Xmx2048m -Xms256m",
+    "files.exclude": {
+        "**/*.class": true
+    },
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-21",
+            "path": "C:\\Users\\maxxf\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.8.9-hotspot",
+            "default": true
+        }
+    ]
+}

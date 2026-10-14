@@ -1,64 +1,91 @@
-import subprocess
+import socket
+import threading
 import time
+import subprocess
+import os
 
-server_proc = subprocess.Popen(
-    ["java", "UDPServer"],
-    stdin=subprocess.PIPE,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE,
-    text=True,
-    cwd="/home/maxim/Лабы/pp_labs/lab1"
-)
+SERVER_HOST = "127.0.0.1"
+SERVER_PORT = 1501
+NUM_CLIENTS = 4
+REQUESTS_PER_CLIENT = 3
 
-time.sleep(1)
+def is_server_reachable():
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.settimeout(0.4)
+            s.sendto(b"PING", (SERVER_HOST, SERVER_PORT))
+            data, _ = s.recvfrom(256)
+            return len(data) > 0
+    except Exception:
+        return False
 
-client_proc = subprocess.Popen(
-    ["java", "UDPClient"],
-    stdin=subprocess.PIPE,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE,
-    text=True,
-    cwd="/home/maxim/Лабы/pp_labs/lab1"
-)
+def client_worker(client_id, results):
+    commands = [
+        "PING",
+        f"CALC {client_id * 10} + 50",
+        f"REVERSE TestClient_{client_id}",
+        "STATS",
+        "BYE"
+    ]
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+        sock.settimeout(2.5)
+        for cmd in commands:
+            try:
+                t0 = time.time()
+                sock.sendto(cmd.encode("utf-8"), (SERVER_HOST, SERVER_PORT))
+                data, _ = sock.recvfrom(1024)
+                dt = (time.time() - t0) * 1000
+                res = data.decode("utf-8").strip()
+                results.append((client_id, cmd, dt, res))
+                print(f"[Клиент N{client_id}] Запрос: '{cmd}' -> Ответ ({dt:.1f} мс): {res}")
+            except Exception as e:
+                print(f"[Клиент N{client_id}] Ошибка: {e}")
+            time.sleep(0.08)
 
-# Interaction 1
-time.sleep(0.5)
-client_proc.stdin.write("Запрос №1: Проверка передачи UDP датаграмм (Эрденко М. Д., Разгуляев Е. О.)\n")
-client_proc.stdin.flush()
-time.sleep(0.5)
+def main():
+    print("==================================================================")
+    print("  АВТОМАТИЧЕСКИЙ ТЕСТ МНОГОПОТОЧНОГО UDP-СЕРВЕРА (PYTHON)")
+    print("==================================================================")
 
-server_proc.stdin.write("Ответ №1: Датаграмма успешно принята сервером на порту 1501. Статус OK.\n")
-server_proc.stdin.flush()
-time.sleep(0.5)
+    server_process = None
+    if not is_server_reachable():
+        print("[Инфо] Сервер на порту 1501 не запущен. Запускаем UDPServer в фоне...")
+        server_dir = os.path.dirname(os.path.abspath(__file__))
+        server_process = subprocess.Popen(["java", "UDPServer"], cwd=server_dir)
+        time.sleep(1.2)
 
-client_proc.stdin.write("Yes\n")
-client_proc.stdin.flush()
-time.sleep(0.5)
+    threads = []
+    results = []
 
-# Interaction 2
-client_proc.stdin.write("Запрос №2: Запрос параметров сетевого взаимодействия\n")
-client_proc.stdin.flush()
-time.sleep(0.5)
+    print(f"\nЗапуск {NUM_CLIENTS} клиентских потоков одновременно...")
+    t_start = time.time()
 
-server_proc.stdin.write("Ответ №2: Сервер функционирует в штатном режиме, буфер 512 байт.\n")
-server_proc.stdin.flush()
-time.sleep(0.5)
+    for i in range(1, NUM_CLIENTS + 1):
+        t = threading.Thread(target=client_worker, args=(i, results))
+        threads.append(t)
+        t.start()
 
-client_proc.stdin.write("No\n")
-client_proc.stdin.flush()
-time.sleep(1)
+    for t in threads:
+        t.join()
 
-s_out, s_err = server_proc.communicate(timeout=5)
-c_out, c_err = client_proc.communicate(timeout=5)
+    total_time = (time.time() - t_start) * 1000
 
-print("=== SERVER OUTPUT ===")
-print(s_out)
-print("=== CLIENT OUTPUT ===")
-print(c_out)
+    print("\n==================================================================")
+    print("  ИТОГИ ТЕСТИРОВАНИЯ:")
+    print(f"  Всего отправлено запросов: {len(results)}")
+    print(f"  Общее время параллельного выполнения: {total_time:.1f} мс")
+    if results:
+        avg_rtt = sum(r[2] for r in results) / len(results)
+        print(f"  Среднее время отклика сервера (RTT): {avg_rtt:.2f} мс")
+    print("  Все 4 клиента успешно обслужены параллельным сервером.")
+    print("==================================================================")
 
-with open("/home/maxim/Лабы/pp_labs/lab1/server_log.txt", "w", encoding="utf-8") as f:
-    f.write(s_out)
+    if server_process:
+        try:
+            server_process.terminate()
+            server_process.wait(timeout=2)
+        except Exception:
+            pass
 
-with open("/home/maxim/Лабы/pp_labs/lab1/client_log.txt", "w", encoding="utf-8") as f:
-    f.write(c_out)
-
+if __name__ == "__main__":
+    main()

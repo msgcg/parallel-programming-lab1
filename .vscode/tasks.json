@@ -1,0 +1,78 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile Java",
+            "type": "shell",
+            "command": "C:\\Users\\maxxf\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.8.9-hotspot\\bin\\javac.exe -encoding UTF-8 UDPServer.java UDPClient.java MultiClientTest.java OneClickLab1.java",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$javac"]
+        },
+        {
+            "label": "ВАНКЛИК: Запуск Лаб 1",
+            "type": "shell",
+            "command": "C:\\Users\\maxxf\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.8.9-hotspot\\bin\\java.exe OneClickLab1",
+            "dependsOn": "Compile Java",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Запустить UDPServer",
+            "type": "shell",
+            "command": "C:\\Users\\maxxf\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.8.9-hotspot\\bin\\java.exe UDPServer 1501",
+            "dependsOn": "Compile Java",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Запустить UDPClient (Интерактивный)",
+            "type": "shell",
+            "command": "C:\\Users\\maxxf\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.8.9-hotspot\\bin\\java.exe UDPClient 127.0.0.1 1501",
+            "dependsOn": "Compile Java",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Запустить MultiClientTest (Java)",
+            "type": "shell",
+            "command": "C:\\Users\\maxxf\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.8.9-hotspot\\bin\\java.exe MultiClientTest",
+            "dependsOn": "Compile Java",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Запустить Python Тест (run_test.py)",
+            "type": "shell",
+            "command": "python run_test.py",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
